@@ -60,7 +60,7 @@ class LogisticRegression(Classifier):
 
         learned = False
         iteration = 0
-        grad = 0
+        grad = np.zeros(len(self.trainingSet.input[0]))
 
         # Train for some epochs if the error is not 0
         while not learned:
@@ -68,10 +68,19 @@ class LogisticRegression(Classifier):
             for input, label in zip(self.trainingSet.input,
                                     self.trainingSet.label):
                 output = self.fire(input)
-                if output != label:
-                    error = loss.calculateError(label, output)
-                    grad += error * input
-                    totalError += error
+
+                error = loss.calculateError(label, output)
+
+                deltaError = label - output
+
+                grad = grad + input * deltaError
+
+                #z = np.dot(np.array(input), self.weight)
+                #grad = grad + deltaError * Activation.sigmoidPrime(z) * input
+
+                totalError += error
+
+            self.updateWeights(grad)
 
             iteration += 1
             
@@ -82,7 +91,6 @@ class LogisticRegression(Classifier):
                 # stop criteria is reached
                 learned = True
 
-        self.updateWeights(grad)
         
         
     def classify(self, testInstance):

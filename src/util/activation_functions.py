@@ -20,7 +20,7 @@ class Activation:
 
     @staticmethod
     def sigmoid(netOutput):
-        return 1 / (1 + exp(-netOutput))
+        return 1.0 / (1.0 + exp(-netOutput))
 
     @staticmethod
     def sigmoidPrime(netOutput):
