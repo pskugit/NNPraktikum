@@ -55,8 +55,35 @@ class LogisticRegression(Classifier):
         verbose : boolean
             Print logging messages with validation accuracy if verbose is True.
         """
+        from util.loss_functions import BinaryCrossEntropyError
+        loss = BinaryCrossEntropyError()
 
-        pass
+        learned = False
+        iteration = 0
+        grad = 0
+
+        # Train for some epochs if the error is not 0
+        while not learned:
+            totalError = 0
+            for input, label in zip(self.trainingSet.input,
+                                    self.trainingSet.label):
+                output = self.fire(input)
+                if output != label:
+                    error = loss.calculateError(label, output)
+                    grad += error * input
+                    totalError += error
+
+            iteration += 1
+            
+            if verbose:
+                logging.info("Epoch: %i; Error: %i", iteration, -totalError)
+            
+            if totalError == 0 or iteration >= self.epochs:
+                # stop criteria is reached
+                learned = True
+
+        self.updateWeights(grad)
+        
         
     def classify(self, testInstance):
         """Classify a single instance.
@@ -94,9 +121,6 @@ class LogisticRegression(Classifier):
     def updateWeights(self, grad):
         self.weight = self.weight + (grad * self.learningRate)
 
-
-        
-        pass
 
     def fire(self, input):
         # Look at how we change the activation function here!!!!
