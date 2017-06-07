@@ -60,7 +60,7 @@ def main():
     evaluator.printAccuracy(data.testSet, perceptronPred)
 
 
-    print("\Result of the Logistic Regression:")
+    print("\nResult of the Logistic Regression:")
     evaluator.printAccuracy(data.testSet, logisticRegressionPred)
     
 if __name__ == '__main__':
