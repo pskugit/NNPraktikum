@@ -45,7 +45,7 @@ class LogisticRegression(Classifier):
         self.testSet = test
 
         # Initialize the weight vector with small values
-        self.weight = 0.01*np.random.randn(self.trainingSet.input.shape[1])
+        self.weight = 0.01*np.random.randn(self.trainingSet.input.shape[1]+1)
 
     def train(self, verbose=True):
         """Train the Logistic Regression.
@@ -60,13 +60,23 @@ class LogisticRegression(Classifier):
 
         learned = False
         iteration = 0
-        grad = np.zeros(len(self.trainingSet.input[0]))
+        grad = np.zeros(len(self.weight))
+
+
+        minError =0;
+        minWeights = self.weight
 
         # Train for some epochs if the error is not 0
         while not learned:
             totalError = 0
             for input, label in zip(self.trainingSet.input,
                                     self.trainingSet.label):
+
+
+                #append the bias and set it to one
+                input = np.append([1], input)
+                input[0] = 1
+                
                 output = self.fire(input)
 
                 error = loss.calculateError(label, output)
@@ -82,15 +92,29 @@ class LogisticRegression(Classifier):
 
             self.updateWeights(grad / len(self.trainingSet.input))
 
+            #test for minimal error
+            if iteration == 1:
+                minError = totalError
+                minWeights = self.weight
+
+            if totalError < minError:
+                #the current weights have a better fittness than all the previous ones
+                minError = totalError
+                minWeights = self.weight
+            
             iteration += 1
             
             if verbose:
-                logging.info("Epoch: %i; Error: %i", iteration, -totalError)
+                logging.info("Epoch: %i; Error: %i", iteration, totalError)
             
             if totalError == 0 or iteration >= self.epochs:
                 # stop criteria is reached
                 learned = True
 
+        #use the weiths with the bests error
+        self.weight = minWeights
+        if verbose:
+            logging.info("Min error: %i", minError)
         
         
     def classify(self, testInstance):
@@ -105,7 +129,15 @@ class LogisticRegression(Classifier):
         bool :
             True if the testInstance is recognized as a 7, False otherwise.
         """
-        return self.fire(testInstance)
+        #append the bias and set it to one
+        testInstance = np.append([1], testInstance)
+        testInstance[0] = 1;
+
+        x = self.fire(testInstance)
+        if x > 0.5:
+            return True
+        else:
+            return False
 
     def evaluate(self, test=None):
         """Evaluate a whole dataset.
@@ -124,6 +156,9 @@ class LogisticRegression(Classifier):
             test = self.testSet.input
         # Once you can classify an instance, just use map for all of the test
         # set.
+
+
+
         return list(map(self.classify, test))
 
     def updateWeights(self, grad):

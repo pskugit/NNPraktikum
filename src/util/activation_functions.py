@@ -20,13 +20,13 @@ class Activation:
 
     @staticmethod
     def sigmoid(netOutput):
-        return 1.0 / (1.0 + exp(-netOutput))
+        return 1.0 / (1.0 + exp(-1.0 *netOutput))
 
     @staticmethod
     def sigmoidPrime(netOutput):
         # Here you have to code the derivative of sigmoid function
         # netOutput.*(1-netOutput)#
-        return Activation.sigmoid(netOutput) * (1 - Activation.sigmoid(netOutput))
+        return Activation.sigmoid(netOutput) * (1.0 - Activation.sigmoid(netOutput))
 
     @staticmethod
     def tanh(netOutput):
