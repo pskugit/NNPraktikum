@@ -80,7 +80,7 @@ class LogisticRegression(Classifier):
 
                 totalError += error
 
-            self.updateWeights(grad)
+            self.updateWeights(grad / len(self.trainingSet.input))
 
             iteration += 1
             
